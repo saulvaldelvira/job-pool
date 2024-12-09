@@ -1,0 +1,14 @@
+[package]
+name = "job-pool"
+description = "Thread Pool"
+authors = ["Saúl Valdelvira <saul@saulv.es>"]
+version = "0.1.7"
+edition = "2021"
+license = "MIT"
+readme = "README"
+
+[dependencies.builders]
+version = ">=0.1.10"
+default-features = false
+features = ["builder"]
+git = "https://github.com/saulvaldelvira/builders"
