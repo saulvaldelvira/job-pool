@@ -7,8 +7,23 @@ edition = "2021"
 license = "MIT"
 readme = "README"
 
+[lib]
+name = "job_pool"
+path = "src/lib.rs"
+crate-type = [ "lib", "cdylib", "staticlib" ]
+
 [dependencies.builders]
 version = ">=0.1.10"
 default-features = false
 features = ["builder"]
 git = "https://github.com/saulvaldelvira/builders"
+
+[build-dependencies.cbindgen]
+version = "0.27.0"
+default-features = false
+optional = true
+
+[features]
+default = []
+bindings = ["dep:cbindgen"]
+

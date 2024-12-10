@@ -18,6 +18,9 @@
 //! pool.join();
 //! ```
 
+#[cfg(feature = "bindings")]
+mod ffi;
+
 mod pool;
 mod worker;
 mod config;
