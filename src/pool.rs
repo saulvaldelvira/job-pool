@@ -79,20 +79,22 @@ impl ThreadPool {
         Self::new(conf)
     }
     pub fn execute(&self, job: impl Job) {
-        {
-            let (lock,cvar) = &*self.semaphore;
-            let mut counter = lock.lock().unwrap();
-            if let Some(max) = self.max_jobs {
-                counter = cvar.wait_while(counter, |n| *n >= max).unwrap();
+        fn _execute(slf: &ThreadPool, job: Box<dyn Job>) {
+            {
+                let (lock,cvar) = &*slf.semaphore;
+                let mut counter = lock.lock().unwrap();
+                if let Some(max) = slf.max_jobs {
+                    counter = cvar.wait_while(counter, |n| *n >= max).unwrap();
+                }
+                *counter += 1;
             }
-            *counter += 1;
+            slf.sender
+                .as_ref()
+                .unwrap()
+                .send(job)
+                .unwrap();
         }
-        let job = Box::new(job);
-        self.sender
-            .as_ref()
-            .unwrap()
-            .send(job)
-            .unwrap();
+         _execute(self, Box::new(job));
     }
     /// Waits for all the jobs in the pool to finish
     pub fn join(&self) {
