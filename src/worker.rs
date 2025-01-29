@@ -1,6 +1,6 @@
 use std::thread::{JoinHandle,spawn};
-use std::sync::{mpsc, Arc, Mutex};
 use crate::Semaphore;
+use crate::channel::ReceiverWrapper;
 
 /// Type of function ran by the [Worker]
 pub trait Job: FnOnce() + Send + 'static {}
@@ -13,14 +13,11 @@ pub struct Worker(Option<JoinHandle<()>>);
 impl Worker {
     /// Creates a new [Worker]
     pub fn new(
-        receiver: Arc<Mutex<mpsc::Receiver<Box<dyn Job>>>>,
+        receiver: ReceiverWrapper<Box<dyn Job>>,
         semaphore: Semaphore,
     ) -> Worker {
         let thread = spawn(move || loop {
-            let message = receiver
-                .lock()
-                .unwrap()
-                .recv();
+            let message = receiver.recv();
 
             match message {
                 Ok(job) => {

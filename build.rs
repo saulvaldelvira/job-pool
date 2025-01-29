@@ -1,8 +1,5 @@
-#[cfg(not(feature = "bindings"))]
-fn main() {}
-
 #[cfg(feature = "bindings")]
-fn main() {
+fn bindings() {
     use std::env;
     extern crate cbindgen;
 
@@ -23,3 +20,14 @@ fn main() {
       );
 }
 
+fn main() {
+    #[cfg(feature = "bindings")]
+    bindings();
+
+    use rustc_version::{version_meta, Channel};
+    println!("cargo::rustc-check-cfg=cfg(rustc_nightly, values(none()))");
+
+    if let Channel::Nightly = version_meta().unwrap().channel {
+        println!("cargo:rustc-cfg=rustc_nightly");
+    }
+}

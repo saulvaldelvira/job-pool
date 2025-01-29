@@ -18,12 +18,26 @@
 //! pool.join();
 //! ```
 
+#![cfg_attr(rustc_nightly, feature(mpmc_channel))]
+
 #[cfg(feature = "bindings")]
 mod ffi;
 
 mod pool;
 mod worker;
 mod config;
+
+/* Switch between mpsc and mpmc until
+ * std::sync::mpmc is stabilized */
+
+#[cfg(rustc_nightly)]
+#[path ="channel/mpmc.rs"]
+mod channel;
+
+#[cfg(not(rustc_nightly))]
+#[path ="channel/mpsc.rs"]
+mod channel;
+
 use std::{borrow::Cow, sync::{Arc, Condvar, Mutex}};
 
 pub use pool::ThreadPool;

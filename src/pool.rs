@@ -1,21 +1,7 @@
-use std::sync::mpsc::SendError;
-use std::sync::{mpsc, Arc, Condvar, Mutex};
+use std::sync::{Arc, Condvar, Mutex};
 use crate::worker::{Job, Worker};
-use crate::{PoolConfig, Result, Semaphore};
-
-pub enum SenderWrapper<T> {
-    Bounded(mpsc::SyncSender<T>),
-    Unbounded(mpsc::Sender<T>),
-}
-
-impl<T> SenderWrapper<T> {
-    fn send(&self, t: T) -> std::result::Result<(),SendError<T>> {
-        match self {
-            SenderWrapper::Bounded(b) => b.send(t),
-            SenderWrapper::Unbounded(u) => u.send(t),
-        }
-    }
-}
+use crate::{channel, PoolConfig, Result, Semaphore};
+use crate::channel::SenderWrapper;
 
 /// Thread Pool
 ///
@@ -42,15 +28,10 @@ impl ThreadPool {
         let size = config.n_workers as usize;
         let (sender,receiver) =
             if let Some(max) = config.incoming_buf_size {
-                let (sender,receiver) = mpsc::sync_channel(max as usize);
-                let sender = SenderWrapper::Bounded(sender);
-                (sender,receiver)
+                channel::sync_channel(max as usize)
             } else {
-                let (sender,receiver) = mpsc::channel();
-                let sender = SenderWrapper::Unbounded(sender);
-                (sender,receiver)
+                channel::channel()
             };
-        let receiver = Arc::new(Mutex::new(receiver));
         let semaphore = Arc::new((Mutex::new(0),Condvar::new()));
         let mut workers = Vec::with_capacity(size);
         for _ in 0..size {
