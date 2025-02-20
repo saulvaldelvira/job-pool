@@ -1,4 +1,7 @@
 Thread Pool
 ===========
-This is a Thread Pool library for rust.
+Thread Pool library for rust.
 
+== Documentation ==
+To build the documentation, run `cargo doc`
+Or browse it online at https://docs.rs/job-pool
