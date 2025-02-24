@@ -1,5 +1,15 @@
+/*
+ * Job pool C bindings example.
+ *
+ * Compile with:
+ *  $ gcc -ljob_pool -L ../target/debug bindings-test.c -o bindings-test
+ *
+ * Run with:
+ *  $ LD_LIBRARY_PATH=../target/debug ./bindings-test
+ */
+
 #define _GNU_SOURCE
-#include "../target/include/bindings.h"
+#include "../target/include/job-pool.h"
 #include <unistd.h>
 #include <stdatomic.h>
 #include <stdio.h>
