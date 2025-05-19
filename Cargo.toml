@@ -4,8 +4,9 @@ description = "Thread Pool"
 authors = ["Saúl Valdelvira <saul@saulv.es>"]
 version = "0.1.10"
 edition = "2021"
-license = "MIT"
+license = "GPL-3.0-only"
 readme = "README"
+repository = "https://github.com/saulvaldelvira/job-pool"
 
 [lib]
 name = "job_pool"
