@@ -1,5 +1,5 @@
 #[cfg(feature = "bindings")]
-fn bindings() {
+fn main() {
     use std::env;
     extern crate cbindgen;
 
@@ -36,14 +36,5 @@ fn bindings() {
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>. */";
 }
 
-fn main() {
-    #[cfg(feature = "bindings")]
-    bindings();
-
-    use rustc_version::{version_meta, Channel};
-    println!("cargo::rustc-check-cfg=cfg(rustc_nightly, values(none()))");
-
-    if let Channel::Nightly = version_meta().unwrap().channel {
-        println!("cargo:rustc-cfg=rustc_nightly");
-    }
-}
+#[cfg(not(feature = "bindings"))]
+fn main() { }

@@ -32,7 +32,7 @@
 //! pool.join();
 //! ```
 
-#![cfg_attr(rustc_nightly, feature(mpmc_channel))]
+#![cfg_attr(feature = "use-nightly-mpmc", feature(mpmc_channel))]
 
 #[cfg(feature = "bindings")]
 mod ffi;
@@ -44,11 +44,11 @@ mod config;
 /* Switch between mpsc and mpmc until
  * std::sync::mpmc is stabilized */
 
-#[cfg(rustc_nightly)]
+#[cfg(feature = "use-nightly-mpmc")]
 #[path ="channel/mpmc.rs"]
 mod channel;
 
-#[cfg(not(rustc_nightly))]
+#[cfg(not(feature = "use-nightly-mpmc"))]
 #[path ="channel/mpsc.rs"]
 mod channel;
 
