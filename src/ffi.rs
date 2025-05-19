@@ -19,7 +19,7 @@ impl PoolConfig {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C"
 fn pool_default_conf() -> PoolConfig {
     PoolConfig {
@@ -29,7 +29,7 @@ fn pool_default_conf() -> PoolConfig {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C"
 fn pool_init(conf: PoolConfig) -> *mut ThreadPool {
     let conf = conf.convert();
@@ -42,7 +42,7 @@ fn pool_init(conf: PoolConfig) -> *mut ThreadPool {
     Box::into_raw(pool)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C"
 fn pool_execute_job(pool: *mut ThreadPool, f: extern "C" fn ()) {
     unsafe {
@@ -50,13 +50,13 @@ fn pool_execute_job(pool: *mut ThreadPool, f: extern "C" fn ()) {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C"
 fn pool_join(pool: *mut ThreadPool) {
     unsafe { (*pool).join(); }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C"
 fn pool_free(pool: *mut ThreadPool) {
     if pool.is_null() { return }
