@@ -2,7 +2,7 @@
 name = "job-pool"
 description = "Thread Pool"
 authors = ["Saúl Valdelvira <saul@saulv.es>"]
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 license = "GPL-3.0-only"
 readme = "README"
@@ -14,7 +14,7 @@ path = "src/lib.rs"
 crate-type = [ "lib", "cdylib", "staticlib" ]
 
 [dependencies.builders]
-version = ">=0.1.10"
+version = ">=0.5.0"
 default-features = false
 features = ["builder"]
 git = "https://github.com/saulvaldelvira/builders"
