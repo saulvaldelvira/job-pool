@@ -7,7 +7,6 @@ use crate::Result;
 pub struct PoolConfig {
     pub n_workers: u16,
     pub max_jobs: Option<u16>,
-    /// Default value: None
     pub incoming_buf_size: Option<u16>,
 }
 

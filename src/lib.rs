@@ -40,6 +40,8 @@ mod ffi;
 mod pool;
 mod worker;
 mod config;
+mod scope;
+pub use scope::Scope;
 
 /* Switch between mpsc and mpmc until
  * std::sync::mpmc is stabilized */
@@ -52,11 +54,46 @@ mod channel;
 #[path ="channel/mpsc.rs"]
 mod channel;
 
-use std::{borrow::Cow, sync::{Arc, Condvar, Mutex}};
+use std::borrow::Cow;
+use std::sync::{Arc, Condvar, Mutex};
 
 pub use pool::ThreadPool;
 pub use config::PoolConfig;
 
-type Semaphore = Arc<(Mutex<u16>,Condvar)>;
-
 pub type Result<T> = std::result::Result<T,Cow<'static,str>>;
+
+#[derive(Clone)]
+struct Counter(Arc<(Mutex<u16>,Condvar)>);
+
+impl Counter {
+    pub fn new() -> Self {
+        Self(Arc::new((Mutex::new(0), Condvar::new())))
+    }
+
+    pub fn inc(&self, max: Option<u16>) {
+        let (lock,cvar) = &*self.0;
+        let mut counter = lock.lock().unwrap();
+        if let Some(max) = max {
+            counter = cvar.wait_while(counter, |n| *n >= max).unwrap();
+        }
+        *counter += 1;
+
+    }
+
+    pub fn count(&self) -> u16 {
+        *self.0.0.lock().unwrap()
+    }
+
+    pub fn dec(&self) {
+        let (lock,condv) = &*self.0;
+        let mut counter = lock.lock().unwrap();
+        *counter -= 1;
+        condv.notify_one();
+    }
+
+    pub fn join(&self) {
+        let (lock,cvar) = &*self.0;
+        let counter = lock.lock().unwrap();
+        let _lock = cvar.wait_while(counter, |n| *n > 0).unwrap();
+    }
+}
